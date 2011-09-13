@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>JTK test</title>
+<script language="javascript">
+var jtk;
+jtk = (function(){
+	var c;
+	var canvas;
+	var cd = new Array();
+	
+	function jtk(str){
+		canvas = document.getElementById(str);        
+		c = canvas.getContext('2d');
+		canvas.addEventListener("click",clickEvent,false);
+		}	
+	function clickEvent(e){
+		for (child in cd){ 		
+			if ( ( (e.x - canvas.offsetLeft) > cd[child].x) &&  ( (e.x - canvas.offsetLeft) < (cd[child].x + cd[child].width)) && ( (e.y - canvas.offsetTop) > cd[child].y) &&  ( (e.y - canvas.offsetTop) < (cd[child].y + cd[child].height)) ){
+				 alert(cd[child]);
+				 return cd[child].onClick;
+				 }
+			}
+		}
+		
+	
+	// simple rectangle	
+	jtk.prototype.Rectangle = function(p){	
+		color = this.hex2rgb(p.color);
+		c.fillStyle = "rgb("+color.red+","+color.green+","+color.blue+")";
+		c.fillRect(p.x, p.y, p.width, p.height);
+		};
+		
+	// simple button	
+	jtk.prototype.Button = function(p,s){	
+	
+		if (s==undefined){
+    		var grd = c.createLinearGradient(p.x, p.y+10, p.x, p.y+p.height);
+    		grd.addColorStop(0, "#fff"); // light blue
+    		grd.addColorStop(1, "#e5e5e5"); // dark blue
+    		c.fillStyle = grd;
+    		c.beginPath();
+    		c.rect(p.x, p.y, p.width, p.height);
+			c.fill();
+			c.lineWidth = 0.5;
+			c.strokeStyle = "#aaa";
+			c.stroke();
+			c.font = (12)+"px Arial";
+			clr = this.hex2rgb("#666");
+			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
+    		c.fillText(p.label, p.x, p.y + (p.height+14)/2);
+			
+		}
+		else{
+			clr = this.hex2rgb(s.backgroundColor);
+			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
+			c.fillRect(p.x, p.y, p.width, p.height);
+			c.font = (s.fontSize)+"px Arial";
+			clr = this.hex2rgb(s.color);
+			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
+    		c.fillText(p.label, p.x, p.y + (p.height+s.fontSize)/2);
+			}
+		
+		cd.push(p);
+		};
+		
+		
+	jtk.prototype.hex2rgb = function(hex){	
+		 if (hex[0]=="#") hex=hex.substr(1);
+  				if (hex.length==3) {
+					var temp=hex; hex='';
+					temp = /^([a-f0-9])([a-f0-9])([a-f0-9])$/i.exec(temp).slice(1);
+					for (var i=0;i<3;i++) hex+=temp[i]+temp[i];
+				  }
+		  var triplets = /^([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex).slice(1);
+		  return {
+			red:   parseInt(triplets[0],16),
+			green: parseInt(triplets[1],16),
+			blue:  parseInt(triplets[2],16)
+		  }
+		};
+		
+return jtk;
+})();
+</script>
+<script language="javascript">
+window.onload = function(){
+var j = new jtk('testcanvas');
+j.Rectangle({x:510,y:50,width:100,height:130,color:"#006699"});
+j.Button({x:210,y:90,width:100,height:30,label:"Custom Button weffbd fd fdsfdsf"},{backgroundColor:"#ffcc00",color:"#333333",fontSize:14});
+j.Button({x:110,y:160,width:100,height:30,label:"Default Button"});
+
+}
+
+</script>
+</head>
+<body>
+<canvas id="testcanvas" width="1024" height="700" style="border:1px solid #999;"> 
+    There is supposed to be an example drawing here, but it's not important.
+</canvas> 
+</body>
+</html>
