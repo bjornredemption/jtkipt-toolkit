@@ -16,10 +16,10 @@ jtk = (function(){
 		canvas.addEventListener("click",clickEvent,false);
 		}	
 	function clickEvent(e){
-		for (child in cd){ 		
+		for (child in cd){ 	
+			// only works for rectangular objects	
 			if ( ( (e.x - canvas.offsetLeft) > cd[child].x) &&  ( (e.x - canvas.offsetLeft) < (cd[child].x + cd[child].width)) && ( (e.y - canvas.offsetTop) > cd[child].y) &&  ( (e.y - canvas.offsetTop) < (cd[child].y + cd[child].height)) ){
-				 alert(cd[child]);
-				 return cd[child].onClick;
+				 cd[child].onclick();
 				 }
 			}
 		}
@@ -33,35 +33,44 @@ jtk = (function(){
 		};
 		
 	// simple button	
-	jtk.prototype.Button = function(p,s){	
-	
+	jtk.prototype.Button = function(p,s){
+		var width,height;	
 		if (s==undefined){
-    		var grd = c.createLinearGradient(p.x, p.y+10, p.x, p.y+p.height);
-    		grd.addColorStop(0, "#fff"); // light blue
-    		grd.addColorStop(1, "#e5e5e5"); // dark blue
+			var fontSize = 12;
+			var vPad = 10;
+			var hPad = 15;
+			this.height = fontSize + (vPad*2);
+    		var grd = c.createLinearGradient(p.x, p.y+10, p.x, p.y+this.height);
+    		grd.addColorStop(0, "#fff"); // white
+    		grd.addColorStop(1, "#e5e5e5"); // grey
     		c.fillStyle = grd;
     		c.beginPath();
-    		c.rect(p.x, p.y, p.width, p.height);
+			c.font = (fontSize)+"px Arial";
+			this.width = c.measureText(p.label).width + (hPad*2);
+			
+    		c.rect(p.x, p.y, this.width, (fontSize+(vPad*2))); 
+			// fontsize is the same as height so button height is fontSize + vertical padding *2
 			c.fill();
 			c.lineWidth = 0.5;
 			c.strokeStyle = "#aaa";
-			c.stroke();
-			c.font = (12)+"px Arial";
+			c.stroke();			
 			clr = this.hex2rgb("#666");
 			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
-    		c.fillText(p.label, p.x, p.y + (p.height+14)/2);
+    		c.fillText(p.label, p.x + hPad, p.y + fontSize + vPad);
 			
 		}
 		else{
 			clr = this.hex2rgb(s.backgroundColor);
 			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
-			c.fillRect(p.x, p.y, p.width, p.height);
+			c.fillRect(p.x, p.y, s.width, s.height);
 			c.font = (s.fontSize)+"px Arial";
 			clr = this.hex2rgb(s.color);
 			c.fillStyle = "rgb("+clr.red+","+clr.green+","+clr.blue+")";
-    		c.fillText(p.label, p.x, p.y + (p.height+s.fontSize)/2);
+    		c.fillText(p.label, p.x, p.y + (s.height+s.fontSize)/2);
+			
 			}
-		
+		p.width = this.width
+		p.height = this.height
 		cd.push(p);
 		};
 		
@@ -88,8 +97,14 @@ return jtk;
 window.onload = function(){
 var j = new jtk('testcanvas');
 j.Rectangle({x:510,y:50,width:100,height:130,color:"#006699"});
-j.Button({x:210,y:90,width:100,height:30,label:"Custom Button weffbd fd fdsfdsf"},{backgroundColor:"#ffcc00",color:"#333333",fontSize:14});
-j.Button({x:110,y:160,width:100,height:30,label:"Default Button"});
+j.Button({x:210,y:90,label:"Custom Button weffbd fd fdsfdsf"},{width:100,height:30,backgroundColor:"#ffcc00",color:"#333333",fontSize:14});
+j.Button({x:110,y:160,label:"Default Button", onclick : function(){
+	alert("Small buttons clicked");
+	
+	}});
+j.Button({x:110,y:260,label:"Check out my Really big Button baby", onclick : function(){
+	alert("Big Buttons clicked");
+	}});
 
 }
 
