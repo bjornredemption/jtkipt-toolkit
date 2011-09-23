@@ -2,12 +2,14 @@ var jtk;
 jtk = (function(){
 	var c;
 	var canvas;
+	var width;
 	var cd = new Array();
 	
 	function jtk(str){
 		canvas = document.getElementById(str);        
 		c = canvas.getContext('2d');
 		canvas.addEventListener("click",clickEvent,false);
+		this.width = canvas.width; 
 		}	
 	function clickEvent(e){
 		for (child in cd){ 	
@@ -20,17 +22,42 @@ jtk = (function(){
 		}
 		
 	//positioning : move this into the main jtk object later
-	Positioning = {
+	jtk.prototype.Positioning = {
 		hbox: {
 			children : [{x:0,y:0}],
-			next : function(width){
+			create : function(numChildren,p){
 					ch = this.children;
-					ch.push({x:ch[ch.length-1].x+width,y:0});
-					return (ch[ch.length-2]);
-		}},
+					ch[0].width = width = Math.floor(p.width / numChildren);
+					ch[0].height = height = p.width;
+					 
+					for (i=0;i<numChildren-1;i++){
+						ch.push({
+							x : ch[ch.length-1].x + width,
+							y : 0,
+							width : width,
+							height : height							
+							});	
+						}
+					return this;	
+					
+				},
+			getChild : function(num){
+					return (this.children[num]);
+				},
+			get : function(num){
+					return (this.children);
+				}
+		},
 		vbox: {
 			children : [{x:0,y:0}],
-			next : function(height){
+			add : function(height){
+					ch = this.children;
+					ch.push({x:0,y:ch[ch.length-1].y+height});
+					return (ch[ch.length-2]);
+		}},	
+		absolute: {
+			children : [{x:0,y:0}],
+			add : function(height){
 					ch = this.children;
 					ch.push({x:0,y:ch[ch.length-1].y+height});
 					return (ch[ch.length-2]);
@@ -43,6 +70,7 @@ jtk = (function(){
 	jtk.prototype.Rectangle = function(p){	
 		c.fillStyle = p.color;
 		c.fillRect(p.x, p.y, p.width, p.height);
+		return {x:p.x,y:p.y};
 		};
 		
 	// simple button	
@@ -53,22 +81,25 @@ jtk = (function(){
 		var hPad = 15;
 
 		c.font = (fontSize)+"px Arial";
-		//var pos = Positioning.hbox.next(c.measureText(p.label).width+(hPad*2));
-		var pos = Positioning.vbox.next(fontSize+(vPad*2));
+
+		//var pos = this.Positioning.hbox.add(p.position);
+		//var pos = this.Positioning.hbox.add(fontSize+(vPad*2));
         
-		x = pos.x;
-		y = pos.y;
+		x = p.position.x;
+		y = p.position.y;
 		
 		if (s==undefined){
 			this.height = fontSize + (vPad*2);
+			//this.height = p.position.height;
     		var grd = c.createLinearGradient(x, y+10,x, y+this.height);
     		grd.addColorStop(0, "#fff"); // white
-    		grd.addColorStop(1, "#e5e5e5"); // grey
+    		grd.addColorStop(1, "#e0e0e0"); // grey
     		c.fillStyle = grd;
     		c.beginPath();
 			this.width = c.measureText(p.label).width + (hPad*2);
+			//this.width = p.position.width;
 			
-    		c.rect(x, y, this.width, (fontSize+(vPad*2))); 
+    		c.rect(x, y, this.width, this.height); 
 			// fontsize is the same as height so button height is fontSize + vertical padding *2
 			c.fill();
 			c.lineWidth = 0.5;

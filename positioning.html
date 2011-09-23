@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>JTK test</title>
+<script language="javascript" src="jtk.js"></script>
+<script language="javascript">
+window.onload = function(){	
+var j = new jtk('testcanvas');
+var p = j.Positioning.hbox.create(3,j);
+console.log(p.get());
+//for (i=0;i<3;i++){
+//j.Button({label:"Positioning test " + i +" button ",position:p.getChild(i),onclick:function(){
+	//alert(this.label);
+	//}});
+//}
+j.Button({label:"Positioning test  button",position:p.getChild(1),onclick:function(){
+	alert("Clicked button "+this.label);
+	}});
+j.Button({label:"First button", position:p.getChild(0),onclick:function(){
+	alert("Clicked button "+this.label);
+	}});
+var p2 = j.Positioning.hbox.create(3,p.getChild(2));
+console.log(p2.get());
+}
+
+</script>
+</head>
+<body>
+<canvas id="testcanvas" width="724" height="300" style="border:1px solid #999;"> 
+    There is supposed to be an example drawing here, but it's not important.
+</canvas> 
+<input name="" type="submit">
+</body>
+</html>

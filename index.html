@@ -7,15 +7,15 @@
 <script language="javascript">
 window.onload = function(){	
 var j = new jtk('testcanvas');
-j.Rectangle({x:510,y:50,width:100,height:130,color:"#006699"});
-j.Button({label:"Custom Button weffbd fd fdsfdsf"},{width:200,height:30,backgroundColor:"#ffcc00",color:"#333333",fontSize:14});
-j.Button({label:"Default Button", onclick : function(){
-	alert("Small buttons clicked");
-	}});
-j.Button({label:"Check out my Really big Button baby"});
+var f = new j.Rectangle({x:510,y:50,width:100,height:130,color:"#006699"});
+var p = j.Positioning.hbox.create(10,j);
+var f2 = new j.Rectangle({x:110,y:90,width:130,height:130,color:"#ff6699"});
+console.log(f2);
+console.log(f);
 for (i=0;i<10;i++){
-j.Button({label:"Positioning test"});
-
+j.Button({label:"Position "+(i+1),position:p.getChild(i), onclick : function(){
+	alert(this.label);
+	}});
 }
 }
 
