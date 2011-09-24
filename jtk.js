@@ -129,9 +129,6 @@ jtk = (function () {
         var hPad = 15;
 
         c.font = (fontSize) + "px Arial";
-
-        //var pos = this.Positioning.hbox.add(p.position);
-        //var pos = this.Positioning.hbox.add(fontSize+(vPad*2));
         x = p.position.x;
         y = p.position.y;
 
@@ -170,4 +167,4 @@ jtk = (function () {
     };
 
     return jtk;
-})(window);
+})(window); 
