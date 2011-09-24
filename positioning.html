@@ -7,27 +7,25 @@
 <script language="javascript">
 window.onload = function(){	
 var j = new jtk('testcanvas');
-var p = j.Positioning.hbox.create(3,j);
-console.log(p.get());
-//for (i=0;i<3;i++){
-//j.Button({label:"Positioning test " + i +" button ",position:p.getChild(i),onclick:function(){
-	//alert(this.label);
-	//}});
-//}
-j.Button({label:"Positioning test  button",position:p.getChild(1),onclick:function(){
-	alert("Clicked button "+this.label);
-	}});
-j.Button({label:"First button", position:p.getChild(0),onclick:function(){
-	alert("Clicked button "+this.label);
-	}});
-var p2 = j.Positioning.hbox.create(3,p.getChild(2));
-console.log(p2.get());
+
+var p2 = j.Positioning.hbox.create(3,j,0);
+var p3 = j.Positioning.hbox.create(3,p2,2);
+var p4 = j.Positioning.hbox.create(3,p3,0);
+
+j.Button({label:"B1",position:j.Positioning.hbox.getChild(p2,0), onclick : function(){	alert(this.label);}});
+j.Button({label:"B2",position:j.Positioning.hbox.getChild(p2,1), onclick : function(){	alert(this.label);}});
+j.Button({label:"B3",position:j.Positioning.hbox.getChild(p3,1), onclick : function(){	alert(this.label);}});
+j.Button({label:"B4",position:j.Positioning.hbox.getChild(p3,2), onclick : function(){	alert(this.label);}});
+j.Button({label:"B5",position:j.Positioning.hbox.getChild(p4,0), onclick : function(){	alert(this.label);}});
+j.Button({label:"B6",position:j.Positioning.hbox.getChild(p4,1), onclick : function(){	alert(this.label);}});
+j.Button({label:"B7",position:j.Positioning.hbox.getChild(p4,2), onclick : function(){	alert(this.label);}});
+
 }
 
 </script>
 </head>
 <body>
-<canvas id="testcanvas" width="724" height="300" style="border:1px solid #999;"> 
+<canvas id="testcanvas" width="924" height="300" style="border:1px solid #999;"> 
     There is supposed to be an example drawing here, but it's not important.
 </canvas> 
 <input name="" type="submit">
