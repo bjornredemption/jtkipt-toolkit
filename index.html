@@ -7,16 +7,21 @@
 <script language="javascript">
 window.onload = function(){	
 var j = new jtk('testcanvas');
+var buttons = 40;
+var d = new Date();
+start = d.getMilliseconds();
 var f = new j.Rectangle({x:510,y:50,width:100,height:130,color:"#006699"});
-var p = j.Positioning.hbox.create(10,j);
 var f2 = new j.Rectangle({x:110,y:90,width:130,height:130,color:"#ff6699"});
-console.log(f2);
-console.log(f);
-for (i=0;i<10;i++){
-j.Button({label:"Position "+(i+1),position:p.getChild(i), onclick : function(){
+var p2 = j.Positioning.hbox.create(buttons,j,0);
+
+for (i=0;i<buttons;i++){
+j.Button({label:"B"+(i+1),position:j.Positioning.hbox.getChild(p2,i), onclick : function(){
 	alert(this.label);
 	}});
+
 }
+var d2 = new Date();
+alert( buttons+" Buttons in : " +(d2.getMilliseconds() - start) +"(ms) ");
 }
 
 </script>

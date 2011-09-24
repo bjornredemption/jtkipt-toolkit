@@ -7,18 +7,17 @@
 <script language="javascript">
 window.onload = function(){	
 var j = new jtk('testcanvas');
-
 var p2 = j.Positioning.hbox.create(3,j,0);
 var p3 = j.Positioning.hbox.create(3,p2,2);
-var p4 = j.Positioning.hbox.create(3,p3,0);
+var p4 = j.Positioning.vbox.create(3,p3,0);
 
 j.Button({label:"B1",position:j.Positioning.hbox.getChild(p2,0), onclick : function(){	alert(this.label);}});
 j.Button({label:"B2",position:j.Positioning.hbox.getChild(p2,1), onclick : function(){	alert(this.label);}});
 j.Button({label:"B3",position:j.Positioning.hbox.getChild(p3,1), onclick : function(){	alert(this.label);}});
 j.Button({label:"B4",position:j.Positioning.hbox.getChild(p3,2), onclick : function(){	alert(this.label);}});
-j.Button({label:"B5",position:j.Positioning.hbox.getChild(p4,0), onclick : function(){	alert(this.label);}});
-j.Button({label:"B6",position:j.Positioning.hbox.getChild(p4,1), onclick : function(){	alert(this.label);}});
-j.Button({label:"B7",position:j.Positioning.hbox.getChild(p4,2), onclick : function(){	alert(this.label);}});
+j.Button({label:"B5",position:j.Positioning.vbox.getChild(p4,0), onclick : function(){	alert(this.label);}});
+j.Button({label:"B6",position:j.Positioning.vbox.getChild(p4,1), onclick : function(){	alert(this.label);}});
+j.Button({label:"B7",position:j.Positioning.vbox.getChild(p4,2), onclick : function(){	alert(this.label);}});
 
 }
 

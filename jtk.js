@@ -10,6 +10,7 @@ jtk = (function () {
         c = canvas.getContext('2d');
         canvas.addEventListener("click", clickEvent, false);
         this.width = canvas.width;
+		this.height = canvas.height;
     }
 
     function clickEvent(e) {
@@ -57,7 +58,7 @@ jtk = (function () {
                         height: height
                     } : {
                         x: e.pos[e.pos.length - 1].x + width,
-                        y: 0,
+                        y: startY,
                         width: width,
                         height: height
                     };
@@ -73,6 +74,7 @@ jtk = (function () {
                 return e;
 
             },
+			// move this up to parent
             getChild: function (p, index) {
                 return (p.pos[index]);
             },
@@ -81,17 +83,60 @@ jtk = (function () {
             }
         },
         vbox: {
-            children: [{
-                x: 0,
-                y: 0
-            }],
-            add: function (height) {
-                ch = this.children;
-                ch.push({
-                    x: 0,
-                    y: ch[ch.length - 1].y + height
-                });
-                return (ch[ch.length - 2]);
+            create: function (numChildren, p, index) {
+                //differentiate between the root canvas element and our positioning elements
+                if (p.num == undefined) {
+                    maxWidth = p.width;
+                    maxHeight = p.height;
+                    startX = 0;
+                    startY = 0;
+                } else {
+                    maxWidth = p.pos[index].width;
+                    maxHeight = p.pos[index].height;
+                    startX = p.pos[index].x;
+                    startY = p.pos[index].y;
+                }
+                width = maxWidth;
+				
+                height = Math.floor(maxHeight / numChildren);
+
+                var e = {
+                    type: 'vbox',
+                    num: numChildren,
+                    children: [],
+                    pos: []
+                }
+
+                for (i = 0; i < numChildren; i++) {
+                    obj = (i == 0) ? {
+                        x: startX,
+                        y: startY,
+                        width: width,
+                        height: height
+                    } : {
+                        x: startX,
+                        y: e.pos[e.pos.length - 1].y + height,
+                        width: width,
+                        height: height
+                    };
+                    e.pos.push(obj);
+                    e.children.push({});
+                }
+                if (p.num == undefined) {
+                    jtk.prototype.Positioning.a.push(e);
+                } else {
+                    p.children[index] = e;
+                }
+                console.log(p);
+                return e;
+
+            },
+			// move this up to parent
+            getChild: function (p, index) {
+                return (p.pos[index]);
+            },
+            get: function (num) {
+                return (this.children);
             }
         },
         absolute: {
