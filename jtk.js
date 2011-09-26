@@ -11,6 +11,7 @@ jtk = (function () {
         canvas.addEventListener("click", clickEvent, false);
         this.width = canvas.width;
 		this.height = canvas.height;
+	
     }
 
     function clickEvent(e) {
@@ -22,6 +23,10 @@ jtk = (function () {
             }
         }
     }
+	
+	function getChild(p, index){
+		 return (p.pos[index]);
+		}
 
     //positioning : move this into the main jtk object later
     jtk.prototype.Positioning = {
@@ -29,6 +34,7 @@ jtk = (function () {
         hbox: {
             create: function (numChildren, p, index) {
                 //differentiate between the root canvas element and our positioning elements
+				//console.log();
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
@@ -75,12 +81,7 @@ jtk = (function () {
 
             },
 			// move this up to parent
-            getChild: function (p, index) {
-                return (p.pos[index]);
-            },
-            get: function (num) {
-                return (this.children);
-            }
+            getChild: getChild
         },
         vbox: {
             create: function (numChildren, p, index) {
@@ -132,12 +133,7 @@ jtk = (function () {
 
             },
 			// move this up to parent
-            getChild: function (p, index) {
-                return (p.pos[index]);
-            },
-            get: function (num) {
-                return (this.children);
-            }
+            getChild: getChild 
         },
         absolute: {
             children: [{
