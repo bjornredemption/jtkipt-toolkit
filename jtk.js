@@ -11,20 +11,24 @@ jtk = (function () {
         canvas.addEventListener("click", clickEvent, false);
         this.width = canvas.width;
 		this.height = canvas.height;
-	
     }
 
     function clickEvent(e) {
         for (child in cd) {
             // only works for rectangular objects	
-            if (((e.clientX - canvas.offsetLeft) > cd[child].x) && ((e.clientX - canvas.offsetLeft) < (cd[child].x + cd[child].width)) && ((e.clientY - canvas.offsetTop) > cd[child].y) && ((e.clientY - canvas.offsetTop) < (cd[child].y + cd[child].height))) {
-
-                cd[child].onclick();
+            if (jtk.prototype.Rectangle({x:cd[child].x,y:cd[child].y,width:cd[child].width,height:cd[child].height, color:"#ffcc00"}).isPointInPath(e.clientX - canvas.offsetLeft,e.clientY - canvas.offsetTop)) {
+			cd[child].onclick();
             }
         }
     }
 	
 	function getChild(p, index){
+		// wtf???? 
+		// this.add(p,index);
+		 return (p.pos[index]);
+		}
+	function addChild(p, index){
+		console.log(p);
 		 return (p.pos[index]);
 		}
 
@@ -32,9 +36,11 @@ jtk = (function () {
     jtk.prototype.Positioning = {
         a: [],
         hbox: {
-            create: function (numChildren, p, index) {
-                //differentiate between the root canvas element and our positioning elements
-				//console.log();
+            create: function (h) {
+                numChildren = h.children;
+                p = h.parent;
+				index = h.index;			
+				
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
@@ -46,28 +52,22 @@ jtk = (function () {
                     startX = p.pos[index].x;
                     startY = p.pos[index].y;
                 }
-                width = Math.floor(maxWidth / numChildren);
+				width = Math.floor(maxWidth / numChildren);
                 height = maxHeight;
 
                 var e = {
                     type: 'hbox',
+					hbox : this,
                     num: numChildren,
                     children: [],
                     pos: []
                 }
 
                 for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? {
-                        x: startX,
-                        y: startY,
-                        width: width,
-                        height: height
-                    } : {
-                        x: e.pos[e.pos.length - 1].x + width,
-                        y: startY,
-                        width: width,
-                        height: height
-                    };
+                    obj = (i == 0) ? { x: startX  } : { x: e.pos[e.pos.length - 1].x + width };
+					obj.y = startY;
+					obj.width = width;
+					obj.height = height;
                     e.pos.push(obj);
                     e.children.push({});
                 }
@@ -76,16 +76,21 @@ jtk = (function () {
                 } else {
                     p.children[index] = e;
                 }
-                //console.log(p);
+               // console.log(jtk.prototype.Positioning.a);
                 return e;
 
             },
 			// move this up to parent
-            getChild: getChild
+            getChild: getChild,
+			add: addChild
         },
         vbox: {
-            create: function (numChildren, p, index) {
-                //differentiate between the root canvas element and our positioning elements
+            create: function (v) {
+                
+				numChildren = v.children;
+                p = v.parent;
+				index = v.index;	
+				
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
@@ -97,29 +102,23 @@ jtk = (function () {
                     startX = p.pos[index].x;
                     startY = p.pos[index].y;
                 }
-                width = maxWidth;
 				
+                width = maxWidth;				
                 height = Math.floor(maxHeight / numChildren);
 
                 var e = {
                     type: 'vbox',
+					vbox : this,
                     num: numChildren,
                     children: [],
                     pos: []
                 }
 
                 for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? {
-                        x: startX,
-                        y: startY,
-                        width: width,
-                        height: height
-                    } : {
-                        x: startX,
-                        y: e.pos[e.pos.length - 1].y + height,
-                        width: width,
-                        height: height
-                    };
+                    obj = (i == 0) ? { y: startY } : { y: e.pos[e.pos.length - 1].y + height  };
+					obj.x = startX;
+					obj.width = width;
+					obj.height = height;
                     e.pos.push(obj);
                     e.children.push({});
                 }
@@ -128,7 +127,6 @@ jtk = (function () {
                 } else {
                     p.children[index] = e;
                 }
-                console.log(p);
                 return e;
 
             },
@@ -154,19 +152,17 @@ jtk = (function () {
     //jtk.Positioning().	
     // simple rectangle	
     jtk.prototype.Rectangle = function (p) {
-        c.fillStyle = p.color;
-        c.fillRect(p.x, p.y, p.width, p.height);
-        return {
-            x: p.x,
-            y: p.y
-        };
+        c.beginPath();
+		c.fillStyle = p.color;
+        c.rect(p.x, p.y, p.width, p.height);
+        return c;
     };
 
     // simple button	
     jtk.prototype.Button = function (p, s) {
         var width, height;
         var fontSize = 12;
-        var vPad = 10;
+        var vPad = 6;
         var hPad = 15;
 
         c.font = (fontSize) + "px Arial";
@@ -205,7 +201,24 @@ jtk = (function () {
         p.y = y;
         p.height = this.height;
         cd.push(p);
+		console.log(p);
+		return this;
     };
+	
+	/* 
+	Display Label Widget on Canvas
+	*/
+	jtk.prototype.Label = function (p, s) {
+		s = (typeof s == "undefined")? 'defaultValue' :s
+		console.log(c);
+		c.beginPath();
+		font = "Arial";
+		color = (s.color)? s.color : "black" ;
+		size = (s.size)? s.size : 10;
+		c.font = size + ' ' + font;
+		c.fillStyle = color;
+		c.fillText(p.text, p.position.x, p.position.y + size);
+	};
 
     return jtk;
 })(window); 

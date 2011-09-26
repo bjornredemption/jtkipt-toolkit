@@ -6,21 +6,30 @@
 <script language="javascript" src="jtk.js"></script>
 <script language="javascript">
 window.onload = function(){	
-var j = new jtk('testcanvas');
-var p2 = j.Positioning.hbox.create(3,j,0);
-var p3 = j.Positioning.hbox.create(3,p2,2);
-var p4 = j.Positioning.vbox.create(3,p3,0);
+	var j = new jtk('testcanvas');
+	//var p2 = j.Positioning.hbox.create({ children : 3, parent : j, index : 0 });
+//	var p3 = j.Positioning.hbox.create({ children : 3, parent : p2, index : 2 });
+//	var p4 = j.Positioning.vbox.create({ children : 3, parent : p2, index : 1 });
+//
+//	
+//	j.Button({ label:"Button 1", position:p2.hbox.getChild(p2,0), onclick : function(){ alert(this.label); }});
+//	j.Button({ label:"B2", position:p3.hbox.getChild(p3,0), onclick : function(){ alert(this.label); }});
+//	j.Label({ text:"Test Label", position:p3.hbox.getChild(p3,1)}, { size: 10 , padding: 5, color: "#555555"});
+//	j.Button({ label:"B4", position:p3.hbox.getChild(p3,2), onclick : function(){ alert(this.label); }});
+//	j.Button({ label:"B5", position:p4.vbox.getChild(p4,0), onclick : function(){ alert(this.label); }});
+//	j.Button({ label:"B6", position:p4.vbox.getChild(p4,1), onclick : function(){ alert(this.label); }});
+//	j.Button({ label:"B7", position:p4.vbox.getChild(p4,2), onclick : function(){ alert(this.label); }});
 
-j.Button({label:"B1",position:j.Positioning.hbox.getChild(p2,0), onclick : function(){	alert(this.label);}});
-j.Button({label:"B2",position:j.Positioning.hbox.getChild(p2,1), onclick : function(){	alert(this.label);}});
-j.Button({label:"B3",position:j.Positioning.hbox.getChild(p3,1), onclick : function(){	alert(this.label);}});
-j.Button({label:"B4",position:j.Positioning.hbox.getChild(p3,2), onclick : function(){	alert(this.label);}});
-j.Button({label:"B5",position:j.Positioning.vbox.getChild(p4,0), onclick : function(){	alert(this.label);}});
-j.Button({label:"B6",position:j.Positioning.vbox.getChild(p4,1), onclick : function(){	alert(this.label);}});
-j.Button({label:"B7",position:j.Positioning.vbox.getChild(p4,2), onclick : function(){	alert(this.label);}});
-
+var p = j.Positioning.hbox.create({ children : 3, parent : j, index : 0 });
+var p2 = j.Positioning.vbox.create({ children : 10, parent : p, index : 1 });
+for (var i=0;i<10;i++){
+var row = j.Positioning.hbox.create({ children : 2, parent : p2, index : i });
+j.Label({ text: " "+(i+1)+") Label Test ", position: row.hbox.getChild(row,0)}, { size: 10 , padding: 5, color: "#555555"});
+j.Button({ label:"Button "+(i+1), position:row.hbox.getChild(row,1), onclick : function(){ 
+	console.log(this);
+ }});
 }
-
+}
 </script>
 </head>
 <body>
