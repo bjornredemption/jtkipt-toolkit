@@ -19,14 +19,14 @@ window.onload = function(){
 //	j.Button({ label:"B5", position:p4.vbox.getChild(p4,0), onclick : function(){ alert(this.label); }});
 //	j.Button({ label:"B6", position:p4.vbox.getChild(p4,1), onclick : function(){ alert(this.label); }});
 //	j.Button({ label:"B7", position:p4.vbox.getChild(p4,2), onclick : function(){ alert(this.label); }});
-
-var p = j.Positioning.hbox.create({ children : 3, parent : j, index : 0 });
-var p2 = j.Positioning.vbox.create({ children : 10, parent : p, index : 1 });
+var p3 = j.create("hbox",{ children : 3, parent : j, index : 0 });
+var p = j.create("hbox",{ children : 3, parent : j, index : 0 });
+var p2 = j.create("vbox",{ children : 10, parent : p, index : 1 });
 for (var i=0;i<10;i++){
-var row = j.Positioning.hbox.create({ children : 2, parent : p2, index : i });
+var row = j.create("hbox",{ children : 2, parent : p2, index : i });
 j.Label({ text: " "+(i+1)+") Label Test ", position: row.hbox.getChild(row,0)}, { size: 10 , padding: 5, color: "#555555"});
 j.Button({ label:"Button "+(i+1), position:row.hbox.getChild(row,1), onclick : function(){ 
-	console.log(this);
+	//console.log(this);
  }});
 }
 }

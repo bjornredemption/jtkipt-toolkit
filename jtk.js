@@ -24,17 +24,27 @@ jtk = (function () {
 	
 	function getChild(p, index){
 		// wtf???? 
-		// this.add(p,index);
+		console.log(jtk.prototype.Positioning.a);
 		 return (p.pos[index]);
 		}
 	function addChild(p, index){
 		console.log(p);
 		 return (p.pos[index]);
 		}
+		
+	jtk.prototype.create = function(type,p,s){
+		switch (type){
+			case "hbox": 
+			return jtk.prototype.Positioning.hbox.create(p,s);break;
+			case "vbox": 
+			return jtk.prototype.Positioning.vbox.create(p,s);break;
+			}
+		}	
 
     //positioning : move this into the main jtk object later
     jtk.prototype.Positioning = {
         a: [],
+		
         hbox: {
             create: function (h) {
                 numChildren = h.children;
@@ -60,7 +70,8 @@ jtk = (function () {
 					hbox : this,
                     num: numChildren,
                     children: [],
-                    pos: []
+                    pos: [],
+					attach : addChild
                 }
 
                 for (i = 0; i < numChildren; i++) {
@@ -111,7 +122,8 @@ jtk = (function () {
 					vbox : this,
                     num: numChildren,
                     children: [],
-                    pos: []
+                    pos: [],
+					attach : addChild
                 }
 
                 for (i = 0; i < numChildren; i++) {
@@ -148,6 +160,8 @@ jtk = (function () {
             }
         }
     };
+	
+
 
     //jtk.Positioning().	
     // simple rectangle	
@@ -201,7 +215,6 @@ jtk = (function () {
         p.y = y;
         p.height = this.height;
         cd.push(p);
-		console.log(p);
 		return this;
     };
 	
@@ -213,9 +226,9 @@ jtk = (function () {
 		console.log(c);
 		c.beginPath();
 		font = "Arial";
-		color = (s.color)? s.color : "black" ;
+		color = (s.color)? s.color : "red" ;
 		size = (s.size)? s.size : 10;
-		c.font = size + ' ' + font;
+		c.font = size+"pt" + ' ' + font;
 		c.fillStyle = color;
 		c.fillText(p.text, p.position.x, p.position.y + size);
 	};
