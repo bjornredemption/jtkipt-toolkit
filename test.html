@@ -9,17 +9,23 @@ window.onload = function(){
 console.log(this);
 var j = new jtk('testcanvas');
 var p = j.create("hbox",{ children : 3, parent : j, index : 0 });
-var p2 = j.create("vbox",{ children : 10, parent : p, index : 1 });
-for (var i=0;i<10;i++){
-	var row = j.create("hbox",{ children : 2, parent : p2, index : i });
-	j.create("label",{ parent : row, index : 0 }, { text: " "+(i+1)+") Hi whats up dude ", size: 10 , color: "#555555" });
-	j.create("button",{ parent : row, index : 1 }, { label: "Button "+(i+1)
+var p2 = j.create("vbox",{ children : 3, parent : p, index : 1 });
+j.create("button",{ parent : p2, index : 1 }, { label: "Button "
 		, onclick : function(e){
-				console.log("ss");
+				alert("Hi Man");
 		}
 	});
-}
-//console.log(j.Positioning.a);
+j.create("button",{ parent : p2, index : 2 }, { label: "Button 2"
+		, onclick : function(e){
+				alert("Poof");
+		}
+	});
+j.create("button",{ parent : p2, index : 0 }, { label: "Button "
+		, onclick : function(e){
+				alert("Hi Man");
+		}
+	});
+	
 }
 </script>
 </head>

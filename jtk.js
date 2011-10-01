@@ -9,48 +9,77 @@ jtk = (function () {
         canvas = document.getElementById(str);
         c = canvas.getContext('2d');
         canvas.addEventListener("click", clickEvent, false);
+        canvas.addEventListener("mousedown", clickEvent, false);
+      	canvas.addEventListener("mousemove", mouseOverEvent, false);
+        canvas.addEventListener("mouseup", clickEvent, false);
         this.width = canvas.width;
-		this.height = canvas.height;
+        this.height = canvas.height;
     }
 
     function clickEvent(e) {
         for (child in cd) {
             // only works for rectangular objects	
-            if (jtk.prototype.Rectangle({x:cd[child].x,y:cd[child].y,width:cd[child].width,height:cd[child].height, color:"#ffcc00"}).isPointInPath(e.clientX - canvas.offsetLeft,e.clientY - canvas.offsetTop)) {
-			cd[child].onclick();
+            if (jtk.prototype.Rectangle(cd[child].up,null, true).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
+                if (e.type == 'mousedown') {
+                    jtk.prototype.Rectangle(cd[child].down,cd[child].label, false);
+                }
+                if (e.type == 'mouseup') {					
+                    jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
+                    cd[child].onclick();
+                }
+
             }
         }
     }
-	
-	function getChild(p, index){
-		// wtf???? 
-		console.log(jtk.prototype.Positioning.a);
-		 return (p.pos[index]);
-		}
-	function addChild(p, index){
-		console.log(p);
-		 return (p.pos[index]);
-		}
-		
-	jtk.prototype.create = function(type,p,s){
-		switch (type){
-			case "hbox": 
-			return jtk.prototype.Positioning.hbox.create(p,s);break;
-			case "vbox": 
-			return jtk.prototype.Positioning.vbox.create(p,s);break;
-			}
-		}	
+
+    function mouseOverEvent(e) {
+        canvas.style.cursor = 'default';
+        for (child in cd) {
+            // only works for rectangular objects	
+            if (jtk.prototype.Rectangle(cd[child].up,null, true).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
+                canvas.style.cursor = 'pointer';
+            }
+        }
+    }
+
+    function getChild(p, index) {
+        // wtf???? 
+        //console.log(jtk.prototype.Positioning.a);
+        return (p.pos[index]);
+    }
+
+    function addChild(p, index) {
+        //console.log(this.children);
+        return (p.pos[index]);
+    }
+
+    jtk.prototype.create = function (type, p, s) {
+        switch (type) {
+        case "hbox":
+            return jtk.prototype.Positioning.hbox.create(p, s);
+            break;
+        case "vbox":
+            return jtk.prototype.Positioning.vbox.create(p, s);
+            break;
+        case "label":
+            p.parent.children[p.index] = this.Label(p.parent.pos[p.index], s);
+            break;
+        case "button":
+            this.Button(p.parent.pos[p.index], s);
+            break;
+        }
+    }
 
     //positioning : move this into the main jtk object later
     jtk.prototype.Positioning = {
         a: [],
-		
+
         hbox: {
             create: function (h) {
                 numChildren = h.children;
                 p = h.parent;
-				index = h.index;			
-				
+                index = h.index;
+
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
@@ -62,23 +91,27 @@ jtk = (function () {
                     startX = p.pos[index].x;
                     startY = p.pos[index].y;
                 }
-				width = Math.floor(maxWidth / numChildren);
+                width = Math.floor(maxWidth / numChildren);
                 height = maxHeight;
 
                 var e = {
                     type: 'hbox',
-					hbox : this,
+                    hbox: this,
                     num: numChildren,
                     children: [],
                     pos: [],
-					attach : addChild
+                    attach: function () {}
                 }
 
                 for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? { x: startX  } : { x: e.pos[e.pos.length - 1].x + width };
-					obj.y = startY;
-					obj.width = width;
-					obj.height = height;
+                    obj = (i == 0) ? {
+                        x: startX
+                    } : {
+                        x: e.pos[e.pos.length - 1].x + width
+                    };
+                    obj.y = startY;
+                    obj.width = width;
+                    obj.height = height;
                     e.pos.push(obj);
                     e.children.push({});
                 }
@@ -87,21 +120,21 @@ jtk = (function () {
                 } else {
                     p.children[index] = e;
                 }
-               // console.log(jtk.prototype.Positioning.a);
+                // console.log(jtk.prototype.Positioning.a);
                 return e;
 
             },
-			// move this up to parent
+            // move this up to parent
             getChild: getChild,
-			add: addChild
+            add: addChild
         },
         vbox: {
             create: function (v) {
-                
-				numChildren = v.children;
+
+                numChildren = v.children;
                 p = v.parent;
-				index = v.index;	
-				
+                index = v.index;
+
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
@@ -113,24 +146,28 @@ jtk = (function () {
                     startX = p.pos[index].x;
                     startY = p.pos[index].y;
                 }
-				
-                width = maxWidth;				
+
+                width = maxWidth;
                 height = Math.floor(maxHeight / numChildren);
 
                 var e = {
                     type: 'vbox',
-					vbox : this,
+                    vbox: this,
                     num: numChildren,
                     children: [],
                     pos: [],
-					attach : addChild
+                    attach: addChild
                 }
 
                 for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? { y: startY } : { y: e.pos[e.pos.length - 1].y + height  };
-					obj.x = startX;
-					obj.width = width;
-					obj.height = height;
+                    obj = (i == 0) ? {
+                        y: startY
+                    } : {
+                        y: e.pos[e.pos.length - 1].y + height
+                    };
+                    obj.x = startX;
+                    obj.width = width;
+                    obj.height = height;
                     e.pos.push(obj);
                     e.children.push({});
                 }
@@ -142,8 +179,8 @@ jtk = (function () {
                 return e;
 
             },
-			// move this up to parent
-            getChild: getChild 
+            // move this up to parent
+            getChild: getChild
         },
         absolute: {
             children: [{
@@ -160,15 +197,36 @@ jtk = (function () {
             }
         }
     };
-	
 
 
-    //jtk.Positioning().	
     // simple rectangle	
-    jtk.prototype.Rectangle = function (p) {
+    jtk.prototype.Rectangle = function ( shape,label, test) {
+		p = shape;
+		s = label;
         c.beginPath();
-		c.fillStyle = p.color;
-        c.rect(p.x, p.y, p.width, p.height);
+        if (test) {
+            c.lineWidth =0;
+            c.rect(p.x, p.y, p.width, p.height);
+        } else {
+            c.clearRect(p.x - 2, p.y - 2, p.width + 3, p.height + 3);
+            c.rect(p.x, p.y, p.width, p.height);
+            if (p.fill) {
+                c.fillStyle = p.fill;
+                c.fill();
+            }
+            if (p.border) {
+                c.lineWidth = p.border;
+                c.strokeStyle = p['border-color'];
+                c.stroke();
+                c.closePath();
+            }
+			
+			if (s){
+				// fontsize is the same as height so button height is fontSize + vertical padding *2
+				c.fillStyle = "#666666";
+				c.fillText(s.text, p.x + s.hPad, p.y + s['font-size'] + s.vPad);
+			}
+        }
         return c;
     };
 
@@ -180,58 +238,84 @@ jtk = (function () {
         var hPad = 15;
 
         c.font = (fontSize) + "px Arial";
-        x = p.position.x;
-        y = p.position.y;
+        x = p.x;
+        y = p.y;
 
-        if (s == undefined) {
-            this.height = fontSize + (vPad * 2);
-            //this.height = p.position.height;
-            var grd = c.createLinearGradient(x, y + 10, x, y + this.height);
-            grd.addColorStop(0, "#fff"); // white
-            grd.addColorStop(1, "#e0e0e0"); // grey
-            c.fillStyle = grd;
-            c.beginPath();
-            this.width = c.measureText(p.label).width + (hPad * 2);
-            //this.width = p.position.width;
-            c.rect(x, y, this.width, this.height);
-            // fontsize is the same as height so button height is fontSize + vertical padding *2
-            c.fill();
-            c.lineWidth = 0.5;
-            c.strokeStyle = "#aaa";
-            c.stroke();
-            c.fillStyle = "#666666";
-            c.fillText(p.label, x + hPad, y + fontSize + vPad);
 
-        } else {
-            c.fillStyle = s.backgroundColor;
-            c.fillRect(x, y, s.width, s.height);
-            c.font = (s.fontSize) + "px Arial";
-            c.fillStyle = s.color;
-            c.fillText(p.label, x, y + (s.height + s.fontSize) / 2);
-
+        this.height = fontSize + (vPad * 2);
+        //this.height = p.position.height;
+        this.width = c.measureText(s.label).width + (hPad * 2);
+        //this.width = p.position.width;
+        var grd = c.createLinearGradient(x, y + 10, x, y + this.height);
+        grd.addColorStop(0, "#fff"); // white
+        grd.addColorStop(1, "#e0e0e0"); // grey
+		
+        var up = {
+            x: x,
+            y: y,
+            width: this.width,
+            height: this.height,
+            fill: grd,
+            border: 0.3,
+            'border-color': "#777"
         }
-        p.width = this.width;
-        p.x = x;
-        p.y = y;
-        p.height = this.height;
-        cd.push(p);
-		return this;
+		
+		 var down = {
+            x: x,
+            y: y,
+            width: this.width,
+            height: this.height,
+            fill: grd,
+            border: 0.8,
+            'border-color': "#111"
+        }
+        
+		
+        var e = {
+            onclick: s.onclick,
+            onmouseover: s.onmouseover,
+            type: "button",           
+            up : up,
+			down : down,
+			label :{
+				hPad : hPad,
+				vPad : vPad,
+				text: s.label,
+				'font-size' : fontSize
+				}
+        }
+		cd.push(e);
+		jtk.prototype.Rectangle(e.up,e.label,false);
+
+        
+        return e;
+		
     };
-	
-	/* 
+
+/* 
 	Display Label Widget on Canvas
 	*/
-	jtk.prototype.Label = function (p, s) {
-		s = (typeof s == "undefined")? 'defaultValue' :s
-		console.log(c);
-		c.beginPath();
-		font = "Arial";
-		color = (s.color)? s.color : "red" ;
-		size = (s.size)? s.size : 10;
-		c.font = size+"pt" + ' ' + font;
-		c.fillStyle = color;
-		c.fillText(p.text, p.position.x, p.position.y + size);
-	};
+    jtk.prototype.Label = function (p, s) {
+        s = (typeof s == "undefined") ? 'defaultValue' : s
+        //console.log(p);
+        c.beginPath();
+        font = "Arial";
+
+        color = (s.color) ? s.color : "red";
+        size = (s.size) ? s.size : 10;
+        c.font = size + "pt" + ' ' + font;
+        c.fillStyle = color;
+        //alert(p.text);
+        c.fillText(s.text, p.x, p.y + size);
+
+        return ({
+            type: "label",
+            text: s.text,
+            color: color,
+            size: size,
+            font: font
+        });
+    };
 
     return jtk;
-})(window); 
+})(jtk);
