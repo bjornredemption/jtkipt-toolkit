@@ -4,33 +4,34 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>JTK test</title>
 <script language="javascript" src="jtk.js"></script>
+<script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
 <script language="javascript">
 window.onload = function(){	
-console.log(this);
+var feed = "http://api.flickr.com/services/feeds/photos_public.gne?id=93324092@N00&lang=en-us&format=json&jsoncallback=?";
 var j = new jtk('testcanvas');
-var p = j.create("hbox",{ children : 3, parent : j, index : 0 });
-var p2 = j.create("vbox",{ children : 3, parent : p, index : 1 });
-j.create("button",{ parent : p2, index : 1 }, { label: "Button "
-		, onclick : function(e){
-				alert("Hi Man");
+$.getJSON(feed, function (data) {
+console.log(data);
+var p = j.create("vbox",{ children : data.items.length+1, parent : j, index : 0 });
+j.create("label",{ parent : p, index : 0 }, { text: "Flickr Feed : "+data.title , size: 14 , color: "#222" });
+for(var i=0;i<data.items.length;i++){	
+	var p2 = j.create("hbox",{ children : 3, parent : p, index : i+1 });
+	j.create("label",{ parent : p2, index : 0 }, { text: data.items[i].published , size: 10 , color: "#999" });
+	j.create("label",{ parent : p2, index : 1 }, { text: data.items[i].title , size: 10 , color: "#222222" });
+	j.create("button",{ parent : p2, index : 2 }, { label: "View Image", 
+			custom : {
+				link : data.items[i].link
+				},
+			onclick : function(e){
+			window.open(this.custom.link,'view');
 		}
-	});
-j.create("button",{ parent : p2, index : 2 }, { label: "Button 2"
-		, onclick : function(e){
-				alert("Poof");
-		}
-	});
-j.create("button",{ parent : p2, index : 0 }, { label: "Button "
-		, onclick : function(e){
-				alert("Hi Man");
-		}
-	});
-	
+	});	
+	}
+});
 }
 </script>
 </head>
 <body>
-<canvas id="testcanvas" width="924" height="400" style="border:1px solid #999;"> 
+<canvas id="testcanvas" width="924" height="620" style="border:1px solid #999;"> 
     There is supposed to be an example drawing here, but it's not important.
 </canvas> 
 <input name="" type="submit">

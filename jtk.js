@@ -274,7 +274,8 @@ jtk = (function () {
         var e = {
             onclick: s.onclick,
             onmouseover: s.onmouseover,
-            type: "button",           
+            type: "button",   
+			custom : s.custom,        
             up : up,
 			down : down,
 			label :{
