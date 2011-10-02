@@ -26,6 +26,7 @@ jtk = (function () {
                 if (e.type == 'mouseup') {					
                     jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
                     cd[child].onclick();
+					jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
                 }
 
             }
