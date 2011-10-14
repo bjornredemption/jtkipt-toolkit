@@ -1,31 +1,46 @@
 var jtk;
 jtk = (function () {
-    var c;
-    var canvas;
-    var width;
-    var cd = new Array();
+    var c, canvas, width, cd;
+	// array to hold child elements for events
+	cd = [];
+
+	// add create:prototype inheritance call for older implementation support ( 1.8.5)
+	if (typeof Object.create !== 'function') {
+    Object.create = function (o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+    };
+}
 
     function jtk(str) {
         canvas = document.getElementById(str);
         c = canvas.getContext('2d');
-        canvas.addEventListener("click", clickEvent, false);
+        // add listeners to the canvas
+		canvas.addEventListener("click", clickEvent, false);
         canvas.addEventListener("mousedown", clickEvent, false);
-      	canvas.addEventListener("mousemove", mouseOverEvent, false);
+		canvas.addEventListener("mousemove", mouseOverEvent, false);
         canvas.addEventListener("mouseup", clickEvent, false);
+		// add dimension properties for reading when we create the root positioning element
         this.width = canvas.width;
         this.height = canvas.height;
     }
 
     function clickEvent(e) {
         for (child in cd) {
-            // only works for rectangular objects	
+            // return a rectangular representation of the button and apply ispointinpath on it
             if (jtk.prototype.Rectangle(cd[child].up,null, true).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
+					
                 if (e.type == 'mousedown') {
+					// apply the down style of the button
                     jtk.prototype.Rectangle(cd[child].down,cd[child].label, false);
                 }
-                if (e.type == 'mouseup') {					
+                if (e.type == 'mouseup') {	
+					// apply the up style of the button				
                     jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
+					// do onclick if specified
                     cd[child].onclick();
+					// apply the up action
 					jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
                 }
 
@@ -57,10 +72,10 @@ jtk = (function () {
     jtk.prototype.create = function (type, p, s) {
         switch (type) {
         case "hbox":
-            return jtk.prototype.Positioning.hbox.create(p, s);
+            return jtk.prototype.Positioning.box.create(p,'hbox');
             break;
         case "vbox":
-            return jtk.prototype.Positioning.vbox.create(p, s);
+            return jtk.prototype.Positioning.box.create(p,'vbox');
             break;
         case "label":
             p.parent.children[p.index] = this.Label(p.parent.pos[p.index], s);
@@ -70,54 +85,75 @@ jtk = (function () {
             break;
         }
     }
-
-    //positioning : move this into the main jtk object later
+	
+	//positioning : move this into the main jtk object later
     jtk.prototype.Positioning = {
-        a: [],
-
-        hbox: {
-            create: function (h) {
-                numChildren = h.children;
-                p = h.parent;
-                index = h.index;
-
+        // object tree that hold all jtk widgets
+		jom: [],
+		// box
+        box: {
+			// function that creates positioning element
+			// b : params passed from jtk.create
+			// type : hbox or vbox
+            create: function (b,type) {
+				
+                numChildren = b.children;
+				// set to the parent reference
+                p = b.parent;
+				// the index of the box on which this element will be attached to
+                index = b.index;
+				
+				// the root positioning elements is the canvas and so we treat it different
                 if (p.num == undefined) {
                     maxWidth = p.width;
                     maxHeight = p.height;
                     startX = 0;
                     startY = 0;
+				// jtk positioning element
                 } else {
                     maxWidth = p.pos[index].width;
                     maxHeight = p.pos[index].height;
                     startX = p.pos[index].x;
                     startY = p.pos[index].y;
                 }
-                width = Math.floor(maxWidth / numChildren);
-                height = maxHeight;
-
-                var e = {
-                    type: 'hbox',
-                    hbox: this,
+				
+				// calculate width of the child elements of the new positioning element we are creating
+				if (type==='hbox'){
+					width = Math.floor(maxWidth / numChildren);	
+					height = maxHeight;
+					}
+				if (type==='vbox'){
+					width = maxWidth;	
+					height = Math.floor(maxHeight / numChildren);
+					}
+                
+				// object we will be using to represent this in the jom
+               var e = {
+                    type: type,
                     num: numChildren,
+					// this will contain widegts and possibly child positioning elements
                     children: [],
+					// this will contain the dimensions of the children for this element
                     pos: [],
-                    attach: function () {}
-                }
-
+                  }
+				
+				// create dimension for the children of the new positioning element
                 for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? {
-                        x: startX
-                    } : {
-                        x: e.pos[e.pos.length - 1].x + width
-                    };
-                    obj.y = startY;
-                    obj.width = width;
+					if (type==='hbox'){
+						obj = (i == 0) ? { x: startX,y:startY } : { x: e.pos[e.pos.length - 1].x + width, y:startY };
+						}
+					if (type==='vbox'){
+	                    obj = (i == 0) ? { x: startX,y:startY } : { y: e.pos[e.pos.length - 1].y + height, x:startX };
+					}
+					obj.width = width;
                     obj.height = height;
                     e.pos.push(obj);
                     e.children.push({});
                 }
+				// if this is the root node attach it to the jom tree at the top
                 if (p.num == undefined) {
-                    jtk.prototype.Positioning.a.push(e);
+                    jtk.prototype.Positioning.jom.push(e);
+				// if not attach this to the current node  of the jom
                 } else {
                     p.children[index] = e;
                 }
@@ -128,78 +164,13 @@ jtk = (function () {
             // move this up to parent
             getChild: getChild,
             add: addChild
-        },
-        vbox: {
-            create: function (v) {
-
-                numChildren = v.children;
-                p = v.parent;
-                index = v.index;
-
-                if (p.num == undefined) {
-                    maxWidth = p.width;
-                    maxHeight = p.height;
-                    startX = 0;
-                    startY = 0;
-                } else {
-                    maxWidth = p.pos[index].width;
-                    maxHeight = p.pos[index].height;
-                    startX = p.pos[index].x;
-                    startY = p.pos[index].y;
-                }
-
-                width = maxWidth;
-                height = Math.floor(maxHeight / numChildren);
-
-                var e = {
-                    type: 'vbox',
-                    vbox: this,
-                    num: numChildren,
-                    children: [],
-                    pos: [],
-                    attach: addChild
-                }
-
-                for (i = 0; i < numChildren; i++) {
-                    obj = (i == 0) ? {
-                        y: startY
-                    } : {
-                        y: e.pos[e.pos.length - 1].y + height
-                    };
-                    obj.x = startX;
-                    obj.width = width;
-                    obj.height = height;
-                    e.pos.push(obj);
-                    e.children.push({});
-                }
-                if (p.num == undefined) {
-                    jtk.prototype.Positioning.a.push(e);
-                } else {
-                    p.children[index] = e;
-                }
-                return e;
-
-            },
-            // move this up to parent
-            getChild: getChild
-        },
-        absolute: {
-            children: [{
-                x: 0,
-                y: 0
-            }],
-            add: function (height) {
-                ch = this.children;
-                ch.push({
-                    x: 0,
-                    y: ch[ch.length - 1].y + height
-                });
-                return (ch[ch.length - 2]);
-            }
         }
     };
-
-
+	
+	jtk.prototype.Textfield = function(){
+		
+		}
+	
     // simple rectangle	
     jtk.prototype.Rectangle = function ( shape,label, test) {
 		p = shape;
@@ -234,10 +205,13 @@ jtk = (function () {
     // simple button	
     jtk.prototype.Button = function (p, s) {
         var width, height;
+		// default font size
         var fontSize = 12;
+		// vertical and horizontal padding between text and top / bottom / left edge of button
         var vPad = 6;
         var hPad = 15;
-
+		
+		
         c.font = (fontSize) + "px Arial";
         x = p.x;
         y = p.y;
@@ -251,6 +225,7 @@ jtk = (function () {
         grd.addColorStop(0, "#fff"); // white
         grd.addColorStop(1, "#e0e0e0"); // grey
 		
+		// define up state
         var up = {
             x: x,
             y: y,
@@ -260,7 +235,7 @@ jtk = (function () {
             border: 0.3,
             'border-color': "#777"
         }
-		
+		// define down state
 		 var down = {
             x: x,
             y: y,
@@ -271,12 +246,14 @@ jtk = (function () {
             'border-color': "#111"
         }
         
-		
+		// object we will be using to represent this in the jom
         var e = {
+			// onclick function
             onclick: s.onclick,
             onmouseover: s.onmouseover,
             type: "button",   
-			custom : s.custom,        
+			// custom params that can be set are attached to the button
+			custom : s.custom,       
             up : up,
 			down : down,
 			label :{
@@ -287,9 +264,8 @@ jtk = (function () {
 				}
         }
 		cd.push(e);
-		jtk.prototype.Rectangle(e.up,e.label,false);
-
-        
+		// draw it
+		jtk.prototype.Rectangle(e.up,e.label,false);        
         return e;
 		
     };
