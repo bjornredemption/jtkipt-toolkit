@@ -1,8 +1,9 @@
 var jtk;
 jtk = (function () {
-    var c, canvas, width, cd;
+    var c, canvas, width, cd, txt;
 	// array to hold child elements for events
 	cd = [];
+	txt = [];
 
 	// add create:prototype inheritance call for older implementation support ( 1.8.5)
 	if (typeof Object.create !== 'function') {
@@ -18,6 +19,7 @@ jtk = (function () {
         c = canvas.getContext('2d');
         // add listeners to the canvas
 		canvas.addEventListener("click", clickEvent, false);
+		canvas.addEventListener("click", clickEventTextField, false);
         canvas.addEventListener("mousedown", clickEvent, false);
 		canvas.addEventListener("mousemove", mouseOverEvent, false);
         canvas.addEventListener("mouseup", clickEvent, false);
@@ -44,6 +46,15 @@ jtk = (function () {
 					jtk.prototype.Rectangle(cd[child].up,cd[child].label, false);
                 }
 
+            }
+        }
+    }
+	
+	 function clickEventTextField(e) {
+        for (child in txt) {
+            // return a rectangular representation of the button and apply ispointinpath on it
+            if (jtk.prototype.Event.isHit(txt[child].hittest).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
+				txt[child].onclick();
             }
         }
     }
@@ -79,6 +90,9 @@ jtk = (function () {
             break;
         case "label":
             p.parent.children[p.index] = this.Label(p.parent.pos[p.index], s);
+            break;
+		case "textfield":
+            this.Textfield(p.parent.pos[p.index], s);
             break;
         case "button":
             this.Button(p.parent.pos[p.index], s);
@@ -167,10 +181,70 @@ jtk = (function () {
         }
     };
 	
-	jtk.prototype.Textfield = function(){
-		
+	jtk.prototype.Textfield = function(p,s){
+		var p = {
+			width:p.width,
+			height:p.height,
+			x:p.x,
+			y:p.y
 		}
-	
+		// object we will be using to represent this in the jom
+        var e = {
+			vPad : 8,
+			hPad : 5,
+			fontSize : 10,
+			position:p,	
+			hittest : {
+				width:p.width,
+				height: p.height,
+				x:p.x,
+				y:p.y
+				},
+			value : [],
+			onkeypress : function(evt){					
+					keyChar = String.fromCharCode(evt.which);
+					//alphaNumCheck = /\w/; // Will only accept a-z, A-Z, 0-9 & _
+					//character = keyChar.match(alphaNumCheck);
+					e.value = e.value +""+ keyChar;					
+					e.redraw();
+				},
+			click : s.onclick,	
+            onclick: function(){
+				removelisteners()
+				window.addEventListener("keypress", e.onkeypress, false);
+				e.click();
+				},
+			redraw : function(){
+				c.font = e.fontSize +" Arial";
+				c.clearRect(e.position.x - 1, e.position.y -1, e.position.width + 2, e.fontSize + (2*e.vPad) +2);
+				c.beginPath();
+				var grd = c.createLinearGradient(e.position.x, e.position.y , e.position.x, e.position.y + e.fontSize );
+        		grd.addColorStop(1, "#fff"); // white
+        		grd.addColorStop(0, "#f0f0f0"); // grey
+				c.lineWidth = 0.3;
+				c.strokeStyle = "#333333";				
+				c.rect(e.position.x, e.position.y , e.position.width, e.fontSize + (2*e.vPad));
+				c.fillStyle = grd;
+				c.fill();
+				c.fillStyle = "#333333";
+				c.stroke();
+				c.closePath();
+				c.fillText(e.value, e.position.x + 5 , e.position.y + 15);
+				},	
+           	type: "textfield" 
+        }
+		txt.push(Object.create(e));
+		// draw it
+		e.redraw();     
+        return e;
+		}
+		
+	function removelisteners(){
+		 for (child in txt) {
+    		//console.log(txt[child].onkeypress);
+	        window.removeEventListener("keypress", txt[child].onkeypress,false);
+        }
+		}
     // simple rectangle	
     jtk.prototype.Rectangle = function ( shape,label, test) {
 		p = shape;
@@ -200,6 +274,16 @@ jtk = (function () {
 			}
         }
         return c;
+    };
+	
+	// simple rectangle	
+    jtk.prototype.Event =  {
+		isHit : function(hittest){
+			 c.beginPath();
+			  c.lineWidth =0;
+           	 c.rect(hittest.x, hittest.y, hittest.width, hittest.height);
+			 return c;
+			}
     };
 
     // simple button	
