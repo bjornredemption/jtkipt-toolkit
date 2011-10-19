@@ -53,7 +53,7 @@ jtk = (function () {
 	 function clickEventTextField(e) {
         for (child in txt) {
             // return a rectangular representation of the button and apply ispointinpath on it
-            if (jtk.prototype.Event.isHit(txt[child].hittest).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
+            if (jtk.prototype.Event.isHit(txt[child].hitarea()).isPointInPath(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)) {
 				txt[child].onclick();
             }
         }
@@ -92,10 +92,10 @@ jtk = (function () {
             p.parent.children[p.index] = this.Label(p.parent.pos[p.index], s);
             break;
 		case "textfield":
-            this.Textfield(p.parent.pos[p.index], s);
+            p.parent.children[p.index] = this.Textfield(p.parent.pos[p.index], s);
             break;
         case "button":
-            this.Button(p.parent.pos[p.index], s);
+            p.parent.children[p.index] =  this.Button(p.parent.pos[p.index], s);
             break;
         }
     }
@@ -194,19 +194,30 @@ jtk = (function () {
 			hPad : 5,
 			fontSize : 10,
 			position:p,	
-			hittest : {
+			hitarea : function(){ return {
 				width:p.width,
-				height: p.height,
+				height: this.fontSize + (this.vPad*2),
 				x:p.x,
 				y:p.y
-				},
+				}},
 			value : [],
+			displayvalue : [],
 			onkeypress : function(evt){					
 					keyChar = String.fromCharCode(evt.which);
 					//alphaNumCheck = /\w/; // Will only accept a-z, A-Z, 0-9 & _
 					//character = keyChar.match(alphaNumCheck);
-					e.value = e.value +""+ keyChar;					
+					e.displayvalue =e.value = e.value +""+ keyChar;					
 					e.redraw();
+					e.drawcursor();
+				},
+			drawcursor : function(){
+				c.beginPath();
+				c.strokeStyle = "black";
+				if (e.position.x + c.measureText(e.value+"a").width > e.position.width){ cursorx = e.position.width + e.position.x - e.hPad;}
+				else { cursorx = e.position.x + c.measureText(e.value+"a").width}
+				c.rect(cursorx , e.position.y - (e.vPad/2) + e.vPad, 0.1, e.fontSize + e.vPad);
+				c.closePath();
+				c.stroke();
 				},
 			click : s.onclick,	
             onclick: function(){
@@ -222,14 +233,15 @@ jtk = (function () {
         		grd.addColorStop(1, "#fff"); // white
         		grd.addColorStop(0, "#f0f0f0"); // grey
 				c.lineWidth = 0.3;
-				c.strokeStyle = "#333333";				
+				c.strokeStyle = "#111";				
 				c.rect(e.position.x, e.position.y , e.position.width, e.fontSize + (2*e.vPad));
 				c.fillStyle = grd;
 				c.fill();
 				c.fillStyle = "#333333";
 				c.stroke();
 				c.closePath();
-				c.fillText(e.value, e.position.x + 5 , e.position.y + 15);
+				if (c.measureText(e.value).width >= e.position.width){  e.displayvalue = e.displayvalue.substr(i,e.displayvalue.length);i++; }
+				c.fillText(e.displayvalue, e.position.x + 5 , e.position.y + 15);
 				},	
            	type: "textfield" 
         }

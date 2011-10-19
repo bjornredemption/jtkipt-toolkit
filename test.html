@@ -12,7 +12,7 @@ for(var i=0;i<10;i++){
 	var p2 = j.create("hbox",{ children : 3, parent : p, index : i });
 	j.create("textfield",{ parent : p2, index : 0 }, { text: "Published" , size: 10 , color: "#999",
 			onclick : function(e){
-				alert(this.value);
+				//alert(this.value);
 				} });
 	j.create("label",{ parent : p2, index : 1 }, { text: "Title" , size: 10 , color: "#222222" });
 	j.create("button",{ parent : p2, index : 2 }, { label: "Button", 
@@ -20,7 +20,7 @@ for(var i=0;i<10;i++){
 				link : "http://"
 				},
 			onclick : function(e){
-			console.log(this);
+			console.log(j);
 		}
 	});	
 	}
