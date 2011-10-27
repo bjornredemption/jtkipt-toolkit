@@ -181,8 +181,12 @@ jtk = (function () {
         }
     };
 	
+	// Textfield widget
+	// p : positioning element
+	// s: widget specific params
 	jtk.prototype.Textfield = function(p,s){
-		var p = {
+		// degine dimensions of textfield
+		var pos = {
 			width:p.width,
 			height:p.height,
 			x:p.x,
@@ -190,43 +194,51 @@ jtk = (function () {
 		}
 		// object we will be using to represent this in the jom
         var e = {
-			vPad : 8,
+			vPad : 6,
 			hPad : 5,
-			fontSize : 10,
-			position:p,	
+			fontSize : 12,
+			position:pos,	
+			// hit area for event handling - defines where hits will be recorded
 			hitarea : function(){ return {
 				width:p.width,
 				height: this.fontSize + (this.vPad*2),
 				x:p.x,
 				y:p.y
 				}},
+			// value will hold the text that is entered	
 			value : [],
+			// for text wider than the width this will be different to value
 			displayvalue : [],
 			onkeypress : function(evt){					
 					keyChar = String.fromCharCode(evt.which);
-					//alphaNumCheck = /\w/; // Will only accept a-z, A-Z, 0-9 & _
-					//character = keyChar.match(alphaNumCheck);
-					e.displayvalue =e.value = e.value +""+ keyChar;					
+					// add pressed char to string
+					e.displayvalue = e.value = e.value +""+ keyChar;		
+					// redraw textfield with new text			
 					e.redraw();
 					e.drawcursor();
 				},
+			// function that draws cursor on key press
 			drawcursor : function(){
 				c.beginPath();
 				c.strokeStyle = "black";
-				if (e.position.x + c.measureText(e.value+"a").width > e.position.width){ cursorx = e.position.width + e.position.x - e.hPad;}
+				// check if cursor is past width of textfield
+				if (e.position.x + c.measureText(e.value+"a").width > e.position.width){ 
+				cursorx = e.position.width + e.position.x - e.hPad;}
 				else { cursorx = e.position.x + c.measureText(e.value+"a").width}
 				c.rect(cursorx , e.position.y - (e.vPad/2) + e.vPad, 0.1, e.fontSize + e.vPad);
 				c.closePath();
 				c.stroke();
 				},
-			click : s.onclick,	
+			// click event	passed by create method
+			click : s.onclick,
+			// click event to attach key press listener
             onclick: function(){
 				removelisteners()
 				window.addEventListener("keypress", e.onkeypress, false);
 				e.click();
 				},
-			redraw : function(){
-				c.font = e.fontSize +" Arial";
+			// method that draws/redraws textfield	
+			redraw : function(){				
 				c.clearRect(e.position.x - 1, e.position.y -1, e.position.width + 2, e.fontSize + (2*e.vPad) +2);
 				c.beginPath();
 				var grd = c.createLinearGradient(e.position.x, e.position.y , e.position.x, e.position.y + e.fontSize );
@@ -240,8 +252,10 @@ jtk = (function () {
 				c.fillStyle = "#333333";
 				c.stroke();
 				c.closePath();
-				if (c.measureText(e.value).width >= e.position.width){  e.displayvalue = e.displayvalue.substr(i,e.displayvalue.length);i++; }
-				c.fillText(e.displayvalue, e.position.x + 5 , e.position.y + 15);
+				// check length of text and set display text
+				if (c.measureText(e.value).width >= e.position.width){  e.displayvalue = e.displayvalue.substr(i,e.displayvalue.length);i++; }			
+				c.font = e.fontSize +"px Arial";
+				c.fillText(e.displayvalue, e.position.x + 5 , e.position.y + e.fontSize + (e.vPad/2));
 				},	
            	type: "textfield" 
         }
@@ -250,7 +264,8 @@ jtk = (function () {
 		e.redraw();     
         return e;
 		}
-		
+	
+	// remove listeners for all texfields
 	function removelisteners(){
 		 for (child in txt) {
     		//console.log(txt[child].onkeypress);
@@ -293,6 +308,7 @@ jtk = (function () {
 		isHit : function(hittest){
 			 c.beginPath();
 			  c.lineWidth =0;
+			  // draw path using hittestof element
            	 c.rect(hittest.x, hittest.y, hittest.width, hittest.height);
 			 return c;
 			}
@@ -370,18 +386,19 @@ jtk = (function () {
 	Display Label Widget on Canvas
 	*/
     jtk.prototype.Label = function (p, s) {
+		
         s = (typeof s == "undefined") ? 'defaultValue' : s
-        //console.log(p);
         c.beginPath();
-        font = "Arial";
-
+		// set default value if not passed in by the create method
+        font = (typeof s.font == "undefined") ? 'Arial' : s.font;
         color = (s.color) ? s.color : "red";
         size = (s.size) ? s.size : 10;
+		
         c.font = size + "pt" + ' ' + font;
         c.fillStyle = color;
-        //alert(p.text);
         c.fillText(s.text, p.x, p.y + size);
-
+		
+		// return jtk object
         return ({
             type: "label",
             text: s.text,
