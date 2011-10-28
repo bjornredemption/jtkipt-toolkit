@@ -1,46 +1,46 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>JTK Demo</title>
-<script language="javascript" src="jtk.js"></script>
-<script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
-<script language="javascript">
-window.onload = function(){	
-var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')[0].split('=');
-var q = (hashes[1]==undefined)?"javascript":hashes[1];
-var feed = "https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="+q+"&start=0&callback=?";
-var j = new jtk('testcanvas');
-$.getJSON(feed, function (data) {
-//console.log(data.responseData);
-d = data.responseData.results;
-var p = j.create("vbox",{ children : d.length+1, parent : j, index : 0 });
-var p3 = j.create("vbox",{ children : 3, parent : p, index : 0 });
-j.create("label",{ parent : p3, index : 2 }, { text: "Results Returned : " + data.responseData.cursor.estimatedResultCount , size: 10 , color: "#666" });
-var p4 = j.create("hbox",{ children : 2, parent : p3, index : 1 });
-j.create("textfield",{ parent : p4, index : 0 }, { size: 10 , color: "#666", onclick:function(){
-	if (this.value!=""){ document.location = "demo.html?q="+this.value; }
-	} });
-j.create("button",{ parent : p4, index : 1 }, { label: "Search", 
-			onclick : function(e){
-			 document.location = "demo.html?q="+p4.children[0].value;
-			
-			//document.location = "demo.html?q="+this.value;
-		}
-});
-for(var i=0;i<d.length;i++){	
-	var p2 = j.create("vbox",{ children : 5, parent : p, index : i+1 });
-	j.create("label",{ parent : p2, index : 0 }, { text: d[i].titleNoFormatting , size: 12 , color: "#1222DE", font : "Verdana" });
-	j.create("label",{ parent : p2, index : 2 }, { text: "http://"+d[i].visibleUrl , size: 11 , color: "#009960" });
-	j.create("label",{ parent : p2, index : 1 }, { text: d[i].content.substring(0,100)+"..." , size: 8 , color: "#aaa" });
-	}
-});
-}
-</script>
-</head>
-<body>
-<canvas id="testcanvas" width="924" height="520" > 
-    There is supposed to be an example drawing here, but it's not important.
-</canvas>
-</body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>JTK Demo</title>
+    <script language="javascript" src="jtk.js"></script>
+    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+    <script language="javascript">
+      window.onload = function(){    
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')[0].split('=');
+        var q = (hashes[1]==undefined)?"javascript":hashes[1];
+        var feed = "https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="+q+"&start=0&callback=?";
+        var j = new jtk('testcanvas');
+        $.getJSON(feed, function (data) {
+        //console.log(data.responseData);
+        d = data.responseData.results;
+        var p = j.create("vbox",{ children : d.length+1, parent : j, index : 0 });
+        var p3 = j.create("vbox",{ children : 3, parent : p, index : 0 });
+        j.create("label",{ parent : p3, index : 2 }, { text: "Results Returned : " + data.responseData.cursor.estimatedResultCount , size: 10 , color: "#666" });
+        var p4 = j.create("hbox",{ children : 2, parent : p3, index : 1 });
+        j.create("textfield",{ parent : p4, index : 0 }, { size: 10 , color: "#666", onclick:function(){
+            if (this.value!=""){ document.location = "demo.html?q="+this.value; }
+            } });
+        j.create("button",{ parent : p4, index : 1 }, { label: "Search", 
+                    onclick : function(e){
+                     document.location = "demo.html?q="+p4.children[0].value;
+                    
+                    //document.location = "demo.html?q="+this.value;
+                }
+        });
+        for(var i=0;i<d.length;i++){    
+            var p2 = j.create("vbox",{ children : 5, parent : p, index : i+1 });
+            j.create("label",{ parent : p2, index : 0 }, { text: d[i].titleNoFormatting , size: 12 , color: "#1222DE", font : "Verdana" });
+            j.create("label",{ parent : p2, index : 2 }, { text: "http://"+d[i].visibleUrl , size: 11 , color: "#009960" });
+            j.create("label",{ parent : p2, index : 1 }, { text: d[i].content.substring(0,100)+"..." , size: 8 , color: "#aaa" });
+            }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="testcanvas" width="924" height="520" >
+        There is supposed to be an example drawing here, but it's not important.
+    </canvas>
+  </body>
 </html>

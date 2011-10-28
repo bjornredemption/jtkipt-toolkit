@@ -6,20 +6,20 @@
 <script language="javascript" src="jtk.js"></script>
 <script language="javascript" src="posotioning.js"></script>
 <script language="javascript">
-window.onload = function(){	
+window.onload = function(){
 var count = 0;
 var j = new jtk('testcanvas');
 var p = j.create("vbox",{ children : 3, parent : j, index : 0 });
 for (var k=0;k<3;k++){
 var c = j.create("hbox",{ children : 3, parent : p, index : k });
 for (var i=0;i<3;i++){
-	j.create("button",{ parent : c, index : i }, { label: " "
-		, onclick : function(e){
-				if (this.label.text==" "){
-				this.label.text = (count++%2)?'X':'O';
-				}
-		}
-	});
+    j.create("button",{ parent : c, index : i }, { label: " "
+        , onclick : function(e){
+                if (this.label.text==" "){
+                this.label.text = (count++%2)?'X':'O';
+                }
+        }
+    });
 }
 }
 //console.log(j.Positioning.a);
